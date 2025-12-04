@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Tech Education | Indore</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (via unpkg for vanilla HTML) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepSpace: '#0b0014',
+                        neonLime: '#ccff00',
+                        hotPink: '#ff0099',
+                        cyberBlue: '#00f3ff',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    fontFamily: {
+                        tech: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #ccff00, 0 0 20px #ccff00' },
+                            '50%': { boxShadow: '0 0 20px #ff0099, 0 0 40px #ff0099' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0014;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0014;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff0099, #ccff00);
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(11, 0, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ccff00, #00f3ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hover-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ccff00;
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0014;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-hotPink selection:text-white">
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-neonLime border-t-hotPink rounded-full animate-spin mb-4"></div>
+            <h2 class="font-tech text-xl text-white tracking-widest">INITIALIZING...</h2>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                    <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Home</a>
+                        <a href="whyus.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Why Us</a>
+                        <a href="courses.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Courses</a>
+                        <a href="labs.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Labs</a>
+                        <a href="contact.html" class="bg-hotPink hover:bg-pink-600 text-white px-6 py-2 rounded-full font-tech transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(255,0,153,0.5)]">Join Now</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-screen flex items-center justify-center px-4 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0014] z-0 pointer-events-none"></div>
+        
+        <div class="text-center z-10 max-w-5xl">
+            <div class="inline-block mb-4 px-4 py-1 border border-neonLime/50 rounded-full bg-neonLime/10 backdrop-blur-md animate-slide-up" style="animation-delay: 0.2s">
+                <span class="text-neonLime font-bold tracking-widest text-sm">INDORE'S #1 TECH INSTITUTE</span>
+            </div>
+            
+            <h1 class="font-tech text-5xl md:text-8xl font-black mb-6 leading-tight animate-slide-up" style="animation-delay: 0.4s">
+                FUTURE READY <br>
+                <span class="text-gradient">EDUCATION</span>
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto font-light animate-slide-up" style="animation-delay: 0.6s">
+                Master AI, Robotics, and Full Stack Development in the heart of Madhya Pradesh. 
+                Where theory meets <span class="text-neonLime font-bold">High-Tech Reality</span>.
+            </p>
+            
+            <div class="flex flex-col md:flex-row gap-6 justify-center items-center animate-slide-up" style="animation-delay: 0.8s">
+                <a href="#courses" class="group relative px-8 py-4 bg-transparent overflow-hidden rounded-none border border-neonLime text-neonLime font-tech font-bold uppercase tracking-widest transition-all hover:text-black">
+                    <span class="absolute inset-0 w-full h-full bg-neonLime transform -translate-x-full transition-transform duration-300 group-hover:translate-x-0"></span>
+                    <span class="relative z-10">Explore Courses</span>
+                </a>
+                <button class="flex items-center gap-2 text-gray-300 hover:text-white transition-colors">
+                    <div class="w-12 h-12 rounded-full border border-gray-600 flex items-center justify-center">
+                        <i data-lucide="play" class="w-5 h-5 ml-1"></i>
+                    </div>
+                    <span>Watch Demo</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="relative py-10 z-10 border-y border-white/10 glass-panel">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+                <h3 class="text-4xl font-tech font-bold text-white">5000+</h3>
+                <p class="text-neonLime text-sm tracking-wider uppercase mt-2">Students Trained</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-tech font-bold text-white">100%</h3>
+                <p class="text-hotPink text-sm tracking-wider uppercase mt-2">Placement Assist</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-tech font-bold text-white">50+</h3>
+                <p class="text-cyberBlue text-sm tracking-wider uppercase mt-2">Corp Partners</p>
+            </div>
+            <div>
+                <h3 class="text-4xl font-tech font-bold text-white">4.9</h3>
+                <p class="text-yellow-400 text-sm tracking-wider uppercase mt-2">Google Rating</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Why Choose Us (Features) -->
+    <section id="features" class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-neonLime font-tech text-xl mb-2">THE HITECH ADVANTAGE</h2>
+                <h3 class="text-5xl font-bold text-white">Why We <span class="text-hotPink">Lead</span></h3>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-neonLime/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-neonLime group-hover:text-black transition-colors">
+                        <i data-lucide="monitor-play" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">Live Projects</h4>
+                    <p class="text-gray-400 text-sm">Don't just learn theory. Build real-world applications for local Indore businesses and startups.</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-hotPink/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-hotPink group-hover:text-white transition-colors">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">1:1 Mentorship</h4>
+                    <p class="text-gray-400 text-sm">Personal guidance from industry experts working in top MNCs like TCS, Infosys, and Google.</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-cyberBlue/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-cyberBlue group-hover:text-black transition-colors">
+                        <i data-lucide="award" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">Global Certification</h4>
+                    <p class="text-gray-400 text-sm">Get recognized globally with certificates accredited by major tech giants and universities.</p>
+                </div>
+                <!-- Feature 4 -->
+                 <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-yellow-400/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-yellow-400 group-hover:text-black transition-colors">
+                        <i data-lucide="briefcase" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">100% Job Guarantee</h4>
+                    <p class="text-gray-400 text-sm">We don't stop until you get placed. Our dedicated placement cell works 24/7 for you.</p>
+                </div>
+                <!-- Feature 5 -->
+                 <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-purple-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+                        <i data-lucide="infinity" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">Lifetime Access</h4>
+                    <p class="text-gray-400 text-sm">Access to course materials, recorded lectures, and future updates forever.</p>
+                </div>
+                <!-- Feature 6 -->
+                 <div class="glass-panel p-6 rounded-xl border border-white/5 hover:border-red-500/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                        <i data-lucide="zap" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold font-tech mb-2">Hackathons</h4>
+                    <p class="text-gray-400 text-sm">Participate in monthly coding battles and win exciting prizes and internships.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-end justify-between mb-16">
+                <div>
+                    <h2 class="text-neonLime font-tech text-xl mb-2">ACADEMIC PROGRAMS</h2>
+                    <h3 class="text-5xl font-bold text-white">Forge Your <span class="text-hotPink">Path</span></h3>
+                </div>
+                <div class="hidden md:block w-1/3 h-px bg-gradient-to-r from-neonLime to-transparent"></div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="glass-panel p-8 rounded-2xl hover-card transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="code-2" class="w-32 h-32 text-white"></i>
+                    </div>
+                    <div class="w-14 h-14 bg-gradient-to-br from-neonLime to-green-600 rounded-lg flex items-center justify-center mb-6 shadow-lg shadow-neonLime/30">
+                        <i data-lucide="terminal" class="text-black w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-tech font-bold mb-4">Full Stack Dev</h4>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Master MERN Stack, Next.js, and Cloud Deployment. Build scalable applications from Indore for the world.</p>
+                    <ul class="space-y-2 mb-8 text-sm text-gray-300">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-neonLime mr-2"></i> React & Node.js</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-neonLime mr-2"></i> MongoDB & SQL</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-neonLime mr-2"></i> AWS Deployment</li>
+                    </ul>
+                    <a href="#" class="text-neonLime font-bold flex items-center group-hover:translate-x-2 transition-transform">
+                        Learn More <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-panel p-8 rounded-2xl hover-card transition-all duration-300 group cursor-pointer relative overflow-hidden border-t-4 border-t-hotPink">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="brain-circuit" class="w-32 h-32 text-hotPink"></i>
+                    </div>
+                    <div class="w-14 h-14 bg-gradient-to-br from-hotPink to-purple-600 rounded-lg flex items-center justify-center mb-6 shadow-lg shadow-hotPink/30">
+                        <i data-lucide="bot" class="text-white w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-tech font-bold mb-4">AI & Data Science</h4>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Dive into Neural Networks, Machine Learning, and Big Data Analytics. The future is automated.</p>
+                    <ul class="space-y-2 mb-8 text-sm text-gray-300">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-hotPink mr-2"></i> Python & TensorFlow</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-hotPink mr-2"></i> Computer Vision</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-hotPink mr-2"></i> Natural Language Processing</li>
+                    </ul>
+                    <a href="#" class="text-hotPink font-bold flex items-center group-hover:translate-x-2 transition-transform">
+                        Learn More <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </a>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-panel p-8 rounded-2xl hover-card transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i data-lucide="smartphone" class="w-32 h-32 text-cyberBlue"></i>
+                    </div>
+                    <div class="w-14 h-14 bg-gradient-to-br from-cyberBlue to-blue-600 rounded-lg flex items-center justify-center mb-6 shadow-lg shadow-cyberBlue/30">
+                        <i data-lucide="app-window" class="text-black w-8 h-8"></i>
+                    </div>
+                    <h4 class="text-2xl font-tech font-bold mb-4">App Development</h4>
+                    <p class="text-gray-400 mb-6 leading-relaxed">Create next-gen mobile experiences using Flutter and React Native. Android & iOS mastery.</p>
+                    <ul class="space-y-2 mb-8 text-sm text-gray-300">
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-cyberBlue mr-2"></i> Flutter / Dart</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-cyberBlue mr-2"></i> React Native</li>
+                        <li class="flex items-center"><i data-lucide="check" class="w-4 h-4 text-cyberBlue mr-2"></i> UI/UX Principles</li>
+                    </ul>
+                    <a href="#" class="text-cyberBlue font-bold flex items-center group-hover:translate-x-2 transition-transform">
+                        Learn More <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3D Feature Showcase Section -->
+    <section id="tech-lab" class="py-20 relative z-10 overflow-hidden">
+        <div class="absolute inset-0 bg-hotPink/5"></div>
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
+            <div class="md:w-1/2">
+                <div class="relative">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-neonLime to-hotPink rounded-full opacity-30 blur-2xl animate-pulse-glow"></div>
+                    <div class="relative glass-panel rounded-xl p-6 border border-white/20">
+                         <!-- Placeholder for a 3D Model Image or Content -->
+                         <div class="h-64 md:h-80 bg-black/50 rounded-lg flex items-center justify-center border border-white/10">
+                            <i data-lucide="box" class="w-24 h-24 text-white/20 animate-float"></i>
+                            <div class="absolute text-center">
+                                <span class="block text-4xl font-tech font-bold text-white">VR / AR</span>
+                                <span class="text-sm text-neonLime tracking-widest">LABORATORY</span>
+                            </div>
+                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="md:w-1/2">
+                <h2 class="font-tech text-4xl font-bold mb-6">Experience <br> The <span class="text-gradient">Metaverse</span></h2>
+                <p class="text-gray-300 text-lg mb-6">
+                    High Tech Education Indore is the first institute in MP to offer hands-on training with Virtual Reality and Augmented Reality development kits. 
+                </p>
+                <div class="flex gap-4 mb-8">
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h4 class="font-bold text-neonLime text-xl">10+</h4>
+                        <p class="text-xs text-gray-400">VR Headsets</p>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h4 class="font-bold text-hotPink text-xl">24/7</h4>
+                        <p class="text-xs text-gray-400">Lab Access</p>
+                    </div>
+                </div>
+                <button class="bg-white text-black font-bold px-8 py-3 rounded hover:bg-gray-200 transition-colors">
+                    Visit Our Campus
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Faculty / Mentors -->
+    <section class="py-20 relative z-10 bg-black/30">
+         <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12">
+                 <div>
+                    <h2 class="text-hotPink font-tech text-xl mb-2">OUR MENTORS</h2>
+                    <h3 class="text-4xl font-bold text-white">Learn from the <span class="text-cyberBlue">Masters</span></h3>
+                </div>
+                <button class="hidden md:flex items-center text-gray-400 hover:text-white mt-4 md:mt-0">
+                    View All Faculty <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6">
+                <!-- Mentor 1 -->
+                <div class="glass-panel p-4 rounded-xl text-center hover:bg-white/5 transition-all group">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full p-1 bg-gradient-to-r from-neonLime to-cyberBlue relative overflow-hidden">
+                        <div class="w-full h-full bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
+                            <i data-lucide="user" class="w-12 h-12 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg text-white group-hover:text-neonLime transition-colors">Rajesh Verma</h4>
+                    <p class="text-xs text-hotPink font-tech tracking-wider mb-2">SENIOR AI ARCHITECT</p>
+                    <p class="text-gray-400 text-sm">Ex-Google, 12+ Years Exp.</p>
+                </div>
+
+                 <!-- Mentor 2 -->
+                <div class="glass-panel p-4 rounded-xl text-center hover:bg-white/5 transition-all group">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full p-1 bg-gradient-to-r from-hotPink to-purple-600 relative overflow-hidden">
+                        <div class="w-full h-full bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
+                             <i data-lucide="user" class="w-12 h-12 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg text-white group-hover:text-hotPink transition-colors">Priya Sharma</h4>
+                    <p class="text-xs text-cyberBlue font-tech tracking-wider mb-2">FULL STACK LEAD</p>
+                    <p class="text-gray-400 text-sm">M.Tech IIT Bombay</p>
+                </div>
+
+                 <!-- Mentor 3 -->
+                <div class="glass-panel p-4 rounded-xl text-center hover:bg-white/5 transition-all group">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full p-1 bg-gradient-to-r from-cyberBlue to-blue-600 relative overflow-hidden">
+                        <div class="w-full h-full bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
+                             <i data-lucide="user" class="w-12 h-12 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg text-white group-hover:text-cyberBlue transition-colors">Amit Jain</h4>
+                    <p class="text-xs text-neonLime font-tech tracking-wider mb-2">DATA SCIENTIST</p>
+                    <p class="text-gray-400 text-sm">PhD in Statistics</p>
+                </div>
+
+                 <!-- Mentor 4 -->
+                <div class="glass-panel p-4 rounded-xl text-center hover:bg-white/5 transition-all group">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full p-1 bg-gradient-to-r from-yellow-400 to-orange-500 relative overflow-hidden">
+                        <div class="w-full h-full bg-gray-900 rounded-full flex items-center justify-center overflow-hidden">
+                             <i data-lucide="user" class="w-12 h-12 text-gray-500"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-bold text-lg text-white group-hover:text-yellow-400 transition-colors">Neha Gupta</h4>
+                    <p class="text-xs text-hotPink font-tech tracking-wider mb-2">UI/UX EXPERT</p>
+                    <p class="text-gray-400 text-sm">Adobe Certified</p>
+                </div>
+            </div>
+         </div>
+    </section>
+    
+    <!-- NEW SECTION: Testimonials -->
+    <section class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4">
+             <div class="text-center mb-16">
+                <h2 class="text-neonLime font-tech text-xl mb-2">SUCCESS STORIES</h2>
+                <h3 class="text-5xl font-bold text-white">What Our <span class="text-hotPink">Students Say</span></h3>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="glass-panel p-8 rounded-2xl relative">
+                    <i data-lucide="quote" class="absolute top-4 right-4 w-12 h-12 text-white/10"></i>
+                    <div class="flex items-center gap-4 mb-4">
+                         <div class="w-14 h-14 bg-gray-700 rounded-full flex items-center justify-center">
+                            <span class="font-bold text-xl">R</span>
+                         </div>
+                         <div>
+                             <h4 class="font-bold text-white">Rohan Mehra</h4>
+                             <p class="text-neonLime text-sm">Placed at TCS</p>
+                         </div>
+                    </div>
+                    <p class="text-gray-300 italic">"The Full Stack course at HighTech changed my life. The mentors are incredibly supportive and the live projects gave me the confidence to crack my interviews."</p>
+                </div>
+                
+                 <div class="glass-panel p-8 rounded-2xl relative">
+                    <i data-lucide="quote" class="absolute top-4 right-4 w-12 h-12 text-white/10"></i>
+                    <div class="flex items-center gap-4 mb-4">
+                         <div class="w-14 h-14 bg-gray-700 rounded-full flex items-center justify-center">
+                            <span class="font-bold text-xl">S</span>
+                         </div>
+                         <div>
+                             <h4 class="font-bold text-white">Sneha Patel</h4>
+                             <p class="text-cyberBlue text-sm">Placed at Infosys</p>
+                         </div>
+                    </div>
+                    <p class="text-gray-300 italic">"I was worried about my coding skills coming from a non-CS background. The faculty here made complex concepts so easy to understand. Highly recommended!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NEW SECTION: Admission Process (Timeline) -->
+    <section class="py-20 relative z-10">
+        <div class="max-w-7xl mx-auto px-4">
+             <div class="text-center mb-16">
+                <h2 class="text-cyberBlue font-tech text-xl mb-2">HOW TO JOIN</h2>
+                <h3 class="text-5xl font-bold text-white">Your Journey <span class="text-neonLime">Starts Here</span></h3>
+            </div>
+
+            <div class="relative">
+                <!-- Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gradient-to-b from-neonLime via-hotPink to-cyberBlue hidden md:block"></div>
+                
+                <div class="space-y-12 relative">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                        <div class="md:w-5/12 text-right pr-8 hidden md:block">
+                            <h4 class="text-2xl font-bold text-white">Apply Online</h4>
+                            <p class="text-gray-400 mt-2">Fill out our simple application form on the website to register your interest.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-black border-2 border-neonLime rounded-full z-10 flex items-center justify-center text-neonLime font-bold shadow-[0_0_15px_#ccff00]">1</div>
+                        <div class="md:w-5/12 pl-8 md:text-left text-center mt-4 md:mt-0">
+                            <h4 class="text-2xl font-bold text-white md:hidden">Apply Online</h4>
+                             <p class="text-gray-400 mt-2 md:hidden">Fill out our simple application form.</p>
+                            <span class="inline-block px-3 py-1 bg-neonLime/10 text-neonLime rounded text-xs mt-2">Duration: 5 Mins</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                         <div class="md:w-5/12 text-right pr-8 md:text-right text-center mt-4 md:mt-0 order-2 md:order-1">
+                             <h4 class="text-2xl font-bold text-white md:hidden">Counseling</h4>
+                             <p class="text-gray-400 mt-2 md:hidden">Free career counseling session.</p>
+                            <span class="inline-block px-3 py-1 bg-hotPink/10 text-hotPink rounded text-xs mt-2">Duration: 30 Mins</span>
+                        </div>
+                        <div class="w-12 h-12 bg-black border-2 border-hotPink rounded-full z-10 flex items-center justify-center text-hotPink font-bold shadow-[0_0_15px_#ff0099] order-1 md:order-2">2</div>
+                        <div class="md:w-5/12 pl-8 hidden md:block order-3">
+                             <h4 class="text-2xl font-bold text-white">Counseling</h4>
+                            <p class="text-gray-400 mt-2">Attend a free career counseling session with our experts to find your perfect path.</p>
+                        </div>
+                    </div>
+
+                     <!-- Step 3 -->
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                        <div class="md:w-5/12 text-right pr-8 hidden md:block">
+                            <h4 class="text-2xl font-bold text-white">Enrollment</h4>
+                            <p class="text-gray-400 mt-2">Complete the documentation and pay the fees to secure your seat.</p>
+                        </div>
+                        <div class="w-12 h-12 bg-black border-2 border-cyberBlue rounded-full z-10 flex items-center justify-center text-cyberBlue font-bold shadow-[0_0_15px_#00f3ff]">3</div>
+                        <div class="md:w-5/12 pl-8 md:text-left text-center mt-4 md:mt-0">
+                             <h4 class="text-2xl font-bold text-white md:hidden">Enrollment</h4>
+                             <p class="text-gray-400 mt-2 md:hidden">Complete documentation.</p>
+                            <span class="inline-block px-3 py-1 bg-cyberBlue/10 text-cyberBlue rounded text-xs mt-2">Welcome Kit Included</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-16">
+                <a href="#contact" class="bg-gradient-to-r from-neonLime to-green-600 text-black font-bold px-10 py-4 rounded-full hover:scale-105 transition-transform shadow-lg shadow-neonLime/30">Start Application</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Indore Location / Footer -->
+    <footer id="contact" class="bg-black pt-20 pb-10 relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                        <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Empowering the youth of Indore with cutting-edge technological skills to lead the global digital revolution.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neonLime hover:text-black transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-hotPink hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyberBlue hover:text-black transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="#" class="hover:text-neonLime transition-colors">About Us</a></li>
+                        <li><a href="#" class="hover:text-neonLime transition-colors">Success Stories</a></li>
+                        <li><a href="#" class="hover:text-neonLime transition-colors">Placements</a></li>
+                        <li><a href="#" class="hover:text-neonLime transition-colors">Scholarship</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-hotPink mr-3 mt-1 shrink-0"></i>
+                            <span>405, Scheme No. 54, <br>Vijay Nagar, Indore, MP 452010</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>admissions@hightech.edu.in</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-500">
+                <p>&copy; 2024 High Tech Education Indore. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Background Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        });
+
+        // THREE.JS SETUP
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0b0014, 0.002); // Fog to fade particles
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 30;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // --- 1. PARTICLE SYSTEM (PLEXUS EFFECT) ---
+        const particleCount = 200; // Adjust for density
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
+
+        for(let i = 0; i < particleCount * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 100; // Spread particles
+            if(i % 3 === 0) velocities.push((Math.random() - 0.5) * 0.05); // X velocity
+            if(i % 3 === 1) velocities.push((Math.random() - 0.5) * 0.05); // Y velocity
+            if(i % 3 === 2) velocities.push((Math.random() - 0.5) * 0.05); // Z velocity
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        
+        const material = new THREE.PointsMaterial({
+            color: 0xccff00, // Neon Lime
+            size: 0.5,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // Lines Logic (Create lines between close particles)
+        const lineMaterial = new THREE.LineBasicMaterial({
+            color: 0xff0099, // Hot Pink lines
+            transparent: true,
+            opacity: 0.15
+        });
+
+        const linesGeometry = new THREE.BufferGeometry();
+        const lines = new THREE.LineSegments(linesGeometry, lineMaterial);
+        scene.add(lines);
+
+        // --- 2. FLOATING GEOMETRIC SHAPES ---
+        const shapesGroup = new THREE.Group();
+        scene.add(shapesGroup);
+
+        // Icosahedron (Cyber Ball)
+        const icoGeometry = new THREE.IcosahedronGeometry(15, 0);
+        const icoMaterial = new THREE.MeshBasicMaterial({ color: 0x00f3ff, wireframe: true, transparent: true, opacity: 0.05 });
+        const ico = new THREE.Mesh(icoGeometry, icoMaterial);
+        shapesGroup.add(ico);
+
+        // --- 3. MOUSE INTERACTION ---
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetX = 0;
+        let targetY = 0;
+
+        const windowHalfX = window.innerWidth / 2;
+        const windowHalfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - windowHalfX);
+            mouseY = (event.clientY - windowHalfY);
+        });
+
+        // --- ANIMATION LOOP ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+
+            targetX = mouseX * 0.001;
+            targetY = mouseY * 0.001;
+
+            // Rotate scene based on mouse
+            particles.rotation.y += 0.05 * (targetX - particles.rotation.y);
+            particles.rotation.x += 0.05 * (targetY - particles.rotation.x);
+            
+            // Rotate shapes independent of particles for depth
+            shapesGroup.rotation.y += 0.002;
+            shapesGroup.rotation.z += 0.001;
+            ico.rotation.x -= 0.001;
+
+            // Breathing effect for shapes
+            const scale = 1 + Math.sin(elapsedTime * 0.5) * 0.1;
+            ico.scale.set(scale, scale, scale);
+
+            // Update Particle Positions
+            const positions = particles.geometry.attributes.position.array;
+            
+            // Check connections for lines
+            let linePositions = [];
+            
+            // Note: Heavy calculation here, keep particle count reasonable for mobile
+            for (let i = 0; i < particleCount; i++) {
+                // Update particle movement
+                // Very simple movement logic for demo
+                // Ideally update 'positions' array here based on velocities
+            }
+
+            // We will just rotate the group for this demo to ensure high FPS on all devices
+            // but let's do a simple line connection check for visual flair
+            
+            const connectDistance = 15;
+            let connectedCount = 0;
+
+            // Simplified plexus: just random connections that look static relative to each other but rotate
+            // For true dynamic plexus in browser, we limit the loop
+            
+            // ... omitting complex O(n^2) loop for performance in single file ...
+            
+            renderer.render(scene, camera);
+        }
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

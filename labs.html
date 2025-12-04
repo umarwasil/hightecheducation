@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Labs | High Tech Education Indore</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (via unpkg for vanilla HTML) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepSpace: '#0b0014',
+                        neonLime: '#ccff00',
+                        hotPink: '#ff0099',
+                        cyberBlue: '#00f3ff',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    fontFamily: {
+                        tech: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #ccff00, 0 0 20px #ccff00' },
+                            '50%': { boxShadow: '0 0 20px #ff0099, 0 0 40px #ff0099' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0014;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0014;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff0099, #ccff00);
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(11, 0, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ccff00, #00f3ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hover-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ccff00;
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0014;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-hotPink selection:text-white">
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-neonLime border-t-hotPink rounded-full animate-spin mb-4"></div>
+            <h2 class="font-tech text-xl text-white tracking-widest">BOOTING LAB ENVIRONMENT...</h2>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                    <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Home</a>
+                        <a href="whyus.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Why Us</a>
+                        <a href="courses.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Courses</a>
+                        <a href="labs.html" class="text-neonLime border-b border-neonLime px-3 py-2 font-medium text-lg">Labs</a>
+                        <a href="contact.html" class="bg-hotPink hover:bg-pink-600 text-white px-6 py-2 rounded-full font-tech transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(255,0,153,0.5)]">Join Now</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header / Hero -->
+    <section class="relative min-h-[70vh] flex items-center justify-center px-4 pt-28 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0014] z-0 pointer-events-none"></div>
+        
+        <div class="z-10 max-w-5xl text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-1 border border-hotPink/60 rounded-full bg-hotPink/10 backdrop-blur-md mb-5 animate-slide-up" style="animation-delay:0.2s">
+                <i data-lucide="vr" class="w-4 h-4 text-hotPink"></i>
+                <span class="text-[13px] tracking-[0.25em] font-semibold text-hotPink">HIGH TECH LABS</span>
+            </span>
+
+            <h1 class="font-tech text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight text-gradient animate-slide-up" style="animation-delay:0.4s">
+                WHERE THEORY<br/>
+                MEETS HARDWARE.
+            </h1>
+
+            <p class="text-lg md:text-2xl text-gray-300 max-w-3xl mx-auto animate-slide-up" style="animation-delay:0.6s">
+                VR / AR, Robotics, Full Stack, AI & Cloud — High Tech Labs are designed so that you **touch, build and break things**
+                before you ship your ideas to the real world.
+            </p>
+        </div>
+    </section>
+
+    <!-- Lab Overview & Stats -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-start">
+            <div>
+                <h2 class="text-neonLime font-tech text-sm tracking-[0.35em] mb-3">INSIDE HIGH TECH LABS</h2>
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">A Playground for Builders</h3>
+                <p class="text-gray-300 text-sm md:text-base mb-4">
+                    Humari labs sirf computer rooms nahi hain — yahan har system, headset, board aur device is waiting for you
+                    to **experiment**. No “sir just show the output and move on” culture.
+                </p>
+                <p class="text-gray-400 text-sm md:text-base mb-4">
+                    You get access to dedicated **practice slots**, **project hours** and **guided lab sessions** aligned with your
+                    course. Seat milna hi nahi, machine milna bhi guaranteed hota hai.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-300">
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                        <span>Separate labs for Web, AI, Robotics & VR so that you get the right environment for each skill.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                        <span>Lab assistants & mentors available during peak hours to help you debug & build faster.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                        <span>Special **Project Nights** and **Hackathon Saturdays** for intense building sprints.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-xs">
+                <div class="glass-panel p-5 rounded-2xl text-center">
+                    <p class="font-tech text-3xl font-bold text-neonLime mb-1">4</p>
+                    <p class="text-gray-400 uppercase tracking-wide">Dedicated Labs</p>
+                    <p class="text-[11px] text-gray-500 mt-2">Web, AI/Data, VR/AR & Robotics</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl text-center">
+                    <p class="font-tech text-3xl font-bold text-hotPink mb-1">60+</p>
+                    <p class="text-gray-400 uppercase tracking-wide">High-End Systems</p>
+                    <p class="text-[11px] text-gray-500 mt-2">SSD, 16GB+ RAM, GPU ready</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl text-center">
+                    <p class="font-tech text-3xl font-bold text-cyberBlue mb-1">10+</p>
+                    <p class="text-gray-400 uppercase tracking-wide">VR Headsets</p>
+                    <p class="text-[11px] text-gray-500 mt-2">Meta Quest, HTC Vive & more</p>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl text-center">
+                    <p class="font-tech text-3xl font-bold text-yellow-300 mb-1">24/7</p>
+                    <p class="text-gray-400 uppercase tracking-wide">Lab Access*</p>
+                    <p class="text-[11px] text-gray-500 mt-2">For project & hackathon members</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lab Types Section -->
+    <section class="relative py-16 border-y border-white/10 z-10 bg-black/40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-cyberBlue font-tech text-sm tracking-[0.35em] mb-3">LAB SPACES</h2>
+                <h3 class="text-3xl md:text-4xl font-bold">Focused Labs for Every <span class="text-neonLime">Technology</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-8 text-sm">
+                <!-- Web Lab -->
+                <div class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-neonLime/20 flex items-center justify-center mb-3">
+                        <i data-lucide="monitor-play" class="w-5 h-5 text-neonLime"></i>
+                    </div>
+                    <h4 class="font-tech text-lg font-semibold mb-2">Full Stack Lab</h4>
+                    <p class="text-gray-300 mb-3">
+                        Dedicated for **MERN, Next.js & API** development with all dev tools pre-installed.
+                    </p>
+                    <ul class="text-[12px] text-gray-400 space-y-1">
+                        <li>✔ VS Code, Postman, Docker, Node.js</li>
+                        <li>✔ Git, GitHub Desktop, DB clients</li>
+                        <li>✔ Local & cloud testing setups</li>
+                    </ul>
+                </div>
+
+                <!-- AI / Data Lab -->
+                <div class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300 border border-hotPink/40">
+                    <div class="w-10 h-10 rounded-full bg-hotPink/20 flex items-center justify-center mb-3">
+                        <i data-lucide="brain" class="w-5 h-5 text-hotPink"></i>
+                    </div>
+                    <h4 class="font-tech text-lg font-semibold mb-2">AI & Data Lab</h4>
+                    <p class="text-gray-300 mb-3">
+                        Ideal for **ML, DL, NLP** experiments with GPU-enabled systems & data tools.
+                    </p>
+                    <ul class="text-[12px] text-gray-400 space-y-1">
+                        <li>✔ Anaconda, Jupyter, VS Code</li>
+                        <li>✔ Python libs pre-configured</li>
+                        <li>✔ Sample datasets & notebooks</li>
+                    </ul>
+                </div>
+
+                <!-- VR / AR Lab -->
+                <div class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-cyberBlue/20 flex items-center justify-center mb-3">
+                        <i data-lucide="box" class="w-5 h-5 text-cyberBlue"></i>
+                    </div>
+                    <h4 class="font-tech text-lg font-semibold mb-2">VR / AR Lab</h4>
+                    <p class="text-gray-300 mb-3">
+                        Experience the **Metaverse** with VR headsets, Unity & Unreal Engine setups.
+                    </p>
+                    <ul class="text-[12px] text-gray-400 space-y-1">
+                        <li>✔ Unity, Blender, Unreal</li>
+                        <li>✔ Orientation on VR interactions</li>
+                        <li>✔ Team-based immersive projects</li>
+                    </ul>
+                </div>
+
+                <!-- Robotics / IoT Lab -->
+                <div class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="w-10 h-10 rounded-full bg-yellow-300/20 flex items-center justify-center mb-3">
+                        <i data-lucide="cpu" class="w-5 h-5 text-yellow-300"></i>
+                    </div>
+                    <h4 class="font-tech text-lg font-semibold mb-2">Robotics & IoT Lab</h4>
+                    <p class="text-gray-300 mb-3">
+                        Work with **Arduino, Raspberry Pi & sensors** to bring hardware ideas to life.
+                    </p>
+                    <ul class="text-[12px] text-gray-400 space-y-1">
+                        <li>✔ Microcontrollers & kits</li>
+                        <li>✔ Soldering & testing tools</li>
+                        <li>✔ Real-world automation projects</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Virtual Tour / Highlight Section -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-center">
+            <div class="relative">
+                <div class="absolute -inset-4 bg-gradient-to-r from-neonLime to-hotPink rounded-full opacity-30 blur-2xl animate-pulse-glow"></div>
+                <div class="relative glass-panel rounded-2xl p-5 border border-white/20">
+                    <div class="h-64 md:h-80 bg-black/60 rounded-xl flex flex-col items-center justify-center border border-white/10 relative overflow-hidden">
+                        <i data-lucide="box" class="w-24 h-24 text-white/15 animate-float"></i>
+                        <div class="absolute text-center">
+                            <span class="block text-3xl md:text-4xl font-tech font-bold text-white">HIGH TECH</span>
+                            <span class="text-sm text-neonLime tracking-[0.3em]">LAB EXPERIENCE</span>
+                        </div>
+                        <div class="absolute bottom-4 right-4 text-[11px] text-gray-400 bg-white/5 px-3 py-1 rounded-full flex items-center gap-1">
+                            <i data-lucide="camera" class="w-3 h-3"></i> Virtual Tour Coming Soon
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4">Step Into Your Future Workplace.</h2>
+                <p class="text-gray-300 text-sm md:text-base mb-4">
+                    Humari labs ka design sirf academic nahi hai — humne layout, lighting, hardware aur ambience sab aise set kiya hai
+                    ki you feel like you are working **inside a startup office or R&D lab**, not a typical classroom.
+                </p>
+                <ul class="space-y-3 text-sm text-gray-300 mb-6">
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                        <span>Focus zones for deep work, group zones for collaboration and breakout corners for brainstorming.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="headphones" class="w-5 h-5 text-hotPink mt-0.5"></i>
+                        <span>Music-friendly hours & silent hours separated, so you can pick your work style.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="users" class="w-5 h-5 text-cyberBlue mt-0.5"></i>
+                        <span>Senior batch students often co-mentor juniors – **peer learning** culture built-in.</span>
+                    </li>
+                </ul>
+
+                <div class="flex flex-wrap gap-3 text-xs">
+                    <span class="px-3 py-1 rounded-full bg-neonLime/10 text-neonLime flex items-center gap-1">
+                        <i data-lucide="star" class="w-3 h-3"></i> Project-First Culture
+                    </span>
+                    <span class="px-3 py-1 rounded-full bg-hotPink/10 text-hotPink flex items-center gap-1">
+                        <i data-lucide="gamepad-2" class="w-3 h-3"></i> Hackathons & Night Outs
+                    </span>
+                    <span class="px-3 py-1 rounded-full bg-cyberBlue/10 text-cyberBlue flex items-center gap-1">
+                        <i data-lucide="id-card" class="w-3 h-3"></i> Access by Student ID
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Timings & Rules -->
+    <section class="relative py-16 border-y border-white/10 z-10 bg-black/40">
+        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-10 items-start">
+            <div class="md:col-span-2">
+                <h2 class="text-neonLime font-tech text-sm tracking-[0.35em] mb-3">ACCESS & TIMINGS</h2>
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Lab Hours & Access Policy</h3>
+                <p class="text-gray-300 text-sm md:text-base mb-4">
+                    Hum chahte hain ki aapko machine ke liye wait na karna pade. Isliye lab access **planned & organised** hota hai.
+                    Har student ko fair time milta hai.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 text-sm">
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                            <i data-lucide="clock-4" class="w-5 h-5 text-neonLime"></i>
+                            Regular Lab Timings
+                        </h4>
+                        <ul class="text-gray-300 text-xs space-y-1">
+                            <li>Mon–Sat: 8:00 AM – 8:00 PM</li>
+                            <li>Batch-wise dedicated lab slots</li>
+                            <li>Extra hours during project weeks</li>
+                        </ul>
+                    </div>
+                    <div class="glass-panel p-5 rounded-2xl">
+                        <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                            <i data-lucide="moon-star" class="w-5 h-5 text-hotPink"></i>
+                            Extended Access*
+                        </h4>
+                        <ul class="text-gray-300 text-xs space-y-1">
+                            <li>Special late-night access for hackathons</li>
+                            <li>Final-year / capstone projects priority</li>
+                            <li>*As per institute schedule & approval</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                        <i data-lucide="shield" class="w-5 h-5 text-cyberBlue"></i>
+                        Lab Etiquette & Safety
+                    </h4>
+                    <ul class="text-gray-300 text-xs md:text-sm space-y-1">
+                        <li>✔ Respect hardware – treat every machine as your own.</li>
+                        <li>✔ No food & drinks near systems / electronics.</li>
+                        <li>✔ Use your **own GitHub** and cloud accounts for projects.</li>
+                        <li>✔ Follow mentor instructions during VR/Robotics sessions for safety.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl text-sm">
+                <h4 class="font-tech text-lg font-semibold mb-3 flex items-center gap-2">
+                    <i data-lucide="id-card" class="w-5 h-5 text-neonLime"></i>
+                    Lab Access Pass
+                </h4>
+                <p class="text-gray-300 mb-4">
+                    Lab access is linked with your **course enrollment**. But serious builders can also apply for **Lab Membership**.
+                </p>
+                <ul class="text-gray-300 text-xs space-y-2 mb-5">
+                    <li>✔ Included access with all flagship programs</li>
+                    <li>✔ Extra lab hours for project teams</li>
+                    <li>✔ Priority booking for hackathon teams</li>
+                </ul>
+                <div class="p-4 bg-black/40 border border-neonLime/40 rounded-xl text-xs flex flex-col gap-3">
+                    <p class="text-gray-200 font-semibold">Want extended access?</p>
+                    <p class="text-gray-400">
+                        Talk to your mentor or the lab coordinator about **Project Membership**.
+                        Yahan se best portfolios nikalte hain.
+                    </p>
+                    <a href="contact.html" class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-neonLime text-black font-semibold hover:bg-lime-300 transition-colors">
+                        Apply for Lab Membership
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mini Testimonials / Lab Stories -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-hotPink font-tech text-sm tracking-[0.35em] mb-3">LAB STORIES</h2>
+                <h3 class="text-3xl md:text-4xl font-bold">Built Inside These <span class="text-neonLime">Labs</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 text-sm">
+                <div class="glass-panel p-6 rounded-2xl relative">
+                    <i data-lucide="quote" class="absolute top-4 right-4 w-10 h-10 text-white/10"></i>
+                    <p class="text-gray-300 mb-4 italic">
+                        "Hamari team ne final year project yahin banaya – full MERN stack + deployment on cloud.
+                        Interview mein jab maine live project dikhaya, ussi time shortlist ho gaya."
+                    </p>
+                    <p class="text-neonLime font-semibold">– Aditya, Full Stack Batch</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl relative">
+                    <i data-lucide="quote" class="absolute top-4 right-4 w-10 h-10 text-white/10"></i>
+                    <p class="text-gray-300 mb-4 italic">
+                        "AI lab ke bina shayad main kabhi TensorFlow touch bhi nahi karti.
+                        Yahan proper GPU machines aur mentors milne ki wajah se ML easy ho gaya."
+                    </p>
+                    <p class="text-hotPink font-semibold">– Kavya, AI & DS Track</p>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl relative">
+                    <i data-lucide="quote" class="absolute top-4 right-4 w-10 h-10 text-white/10"></i>
+                    <p class="text-gray-300 mb-4 italic">
+                        "Robotics lab mein Arduino se start karke pura smart home prototype bana liya.
+                        Hardware se jo confidence aata hai, wo sirf coding se nahi aata."
+                    </p>
+                    <p class="text-cyberBlue font-semibold">– Rohan, Robotics Enthusiast</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-20 z-10">
+        <div class="max-w-4xl mx-auto px-4 text-center glass-panel rounded-3xl border border-neonLime/40 p-8 md:p-12">
+            <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4">
+                Want to See the Labs <span class="text-gradient">In Person?</span>
+            </h2>
+            <p class="text-gray-300 text-sm md:text-base mb-8 max-w-2xl mx-auto">
+                Book a **campus visit** and experience High Tech Labs live — systems, VR headsets, robotics kits, everything.
+                Aao, baith ke kaam karke dekho phir decision lo.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <a href="contact.html" class="px-8 py-3 rounded-full bg-neonLime text-black font-semibold text-sm md:text-base hover:bg-lime-300 transition-colors flex items-center gap-2">
+                    Schedule a Lab Visit
+                    <i data-lucide="map-pin" class="w-4 h-4"></i>
+                </a>
+                <a href="https://wa.me/919876543210" class="px-8 py-3 rounded-full border border-green-500 text-green-400 text-sm md:text-base hover:bg-green-500/10 transition-colors flex items-center gap-2">
+                    Ask About Lab Access
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black pt-16 pb-8 relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                        <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Empowering the youth of Indore with cutting-edge technological skills to lead the global digital revolution.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neonLime hover:text-black transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-hotPink hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyberBlue hover:text-black transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="index.html" class="hover:text-neonLime transition-colors">Home</a></li>
+                        <li><a href="whyus.html" class="hover:text-neonLime transition-colors">Why Us</a></li>
+                        <li><a href="courses.html" class="hover:text-neonLime transition-colors">Courses</a></li>
+                        <li><a href="contact.html" class="hover:text-neonLime transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400 text-sm">
+                        <li class="flex items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-hotPink mr-3 mt-1 shrink-0"></i>
+                            <span>405, Scheme No. 54, <br>Vijay Nagar, Indore, MP 452010</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>admissions@hightech.edu.in</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2024 High Tech Education Indore. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Background Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        });
+
+        // THREE.JS SETUP
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0b0014, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 35;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Stars
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 260;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 150;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xccff00,
+            size: 0.7,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // Wire Mesh
+        const wireGeometry = new THREE.TorusKnotGeometry(18, 0.4, 120, 16);
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0099, wireframe: true, transparent: true, opacity: 0.12 });
+        const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
+        scene.add(wireMesh);
+
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        const halfX = window.innerWidth / 2;
+        const halfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - halfX);
+            mouseY = (event.clientY - halfY);
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            targetX = mouseX * 0.0005;
+            targetY = mouseY * 0.0005;
+
+            wireMesh.rotation.y = elapsed * 0.04 + targetX;
+            wireMesh.rotation.x = elapsed * 0.02 + targetY;
+            stars.rotation.y += 0.0008;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

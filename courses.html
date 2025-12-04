@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses | High Tech Education Indore</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (via unpkg for vanilla HTML) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepSpace: '#0b0014',
+                        neonLime: '#ccff00',
+                        hotPink: '#ff0099',
+                        cyberBlue: '#00f3ff',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    fontFamily: {
+                        tech: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #ccff00, 0 0 20px #ccff00' },
+                            '50%': { boxShadow: '0 0 20px #ff0099, 0 0 40px #ff0099' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0014;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0014;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff0099, #ccff00);
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(11, 0, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ccff00, #00f3ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hover-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ccff00;
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0014;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-hotPink selection:text-white">
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-neonLime border-t-hotPink rounded-full animate-spin mb-4"></div>
+            <h2 class="font-tech text-xl text-white tracking-widest">LOADING COURSE MATRIX...</h2>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                    <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Home</a>
+                        <a href="whyus.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Why Us</a>
+                        <a href="courses.html" class="text-neonLime border-b border-neonLime px-3 py-2 font-medium text-lg">Courses</a>
+                        <a href="labs.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Labs</a>
+                        <a href="contact.html" class="bg-hotPink hover:bg-pink-600 text-white px-6 py-2 rounded-full font-tech transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(255,0,153,0.5)]">Join Now</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header / Hero -->
+    <section class="relative min-h-[70vh] flex items-center justify-center px-4 pt-28 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0014] z-0 pointer-events-none"></div>
+        
+        <div class="z-10 max-w-4xl text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-1 border border-cyberBlue/60 rounded-full bg-cyberBlue/10 backdrop-blur-md mb-5 animate-slide-up" style="animation-delay:0.2s">
+                <i data-lucide="layers" class="w-4 h-4 text-cyberBlue"></i>
+                <span class="text-[13px] tracking-[0.25em] font-semibold text-cyberBlue">PROGRAM CATALOGUE</span>
+            </span>
+
+            <h1 class="font-tech text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight text-gradient animate-slide-up" style="animation-delay:0.4s">
+                COURSES THAT<br />
+                BUILD CAREERS.
+            </h1>
+
+            <p class="text-lg md:text-2xl text-gray-300 max-w-3xl mx-auto animate-slide-up" style="animation-delay:0.6s">
+                From **absolute beginners** to working professionals — every program at High Tech Education is 
+                designed to take you from <span class="text-neonLime font-semibold">zero to job-ready</span> with practical, 
+                industry-focused training.
+            </p>
+        </div>
+    </section>
+
+    <!-- Category Tabs (Static text style) -->
+    <section class="relative py-8 z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex flex-wrap gap-3 justify-center text-xs md:text-sm">
+                <button class="px-4 py-2 rounded-full bg-neonLime text-black font-semibold flex items-center gap-2">
+                    <i data-lucide="star" class="w-4 h-4"></i> Flagship Programs
+                </button>
+                <button class="px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-hotPink hover:text-hotPink transition-colors flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Fast-Track / Short Term
+                </button>
+                <button class="px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-cyberBlue hover:text-cyberBlue transition-colors flex items-center gap-2">
+                    <i data-lucide="database" class="w-4 h-4"></i> Data & AI Tracks
+                </button>
+                <button class="px-4 py-2 rounded-full border border-gray-600 text-gray-300 hover:border-yellow-300 hover:text-yellow-300 transition-colors flex items-center gap-2">
+                    <i data-lucide="layout-template" class="w-4 h-4"></i> Design & Product
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flagship Programs -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+                <div>
+                    <h2 class="text-neonLime font-tech text-sm tracking-[0.35em] mb-3">FLAGSHIP PROGRAMS</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold">Long-Term Career Tracks</h3>
+                    <p class="text-gray-400 text-sm md:text-base mt-2 max-w-xl">
+                        Ideal for BCA / BSc / BE students and freshers who want a solid IT career foundation with 
+                        **6–12 months of guided learning** + **placement assistance**.
+                    </p>
+                </div>
+                <div class="text-xs text-gray-400 glass-panel px-4 py-3 rounded-full flex items-center gap-2">
+                    <i data-lucide="info" class="w-4 h-4 text-cyberBlue"></i>
+                    <span>All flagship programs include: soft skills training, resume building & mock interviews.</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Program 1 -->
+                <article class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300 border border-neonLime/40 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 p-4">
+                        <i data-lucide="terminal-square" class="w-20 h-20 text-neonLime"></i>
+                    </div>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-neonLime/15 text-neonLime text-[11px] font-semibold mb-4">
+                        <i data-lucide="badge-check" class="w-3 h-3"></i> MOST POPULAR
+                    </span>
+                    <h4 class="font-tech text-xl font-semibold mb-1">Full Stack Developer Program</h4>
+                    <p class="text-gray-400 text-xs mb-4">MERN + Next.js + DevOps Basics</p>
+                    
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-neonLime"></i>
+                            <span>Duration: 9 months (Weekend / Regular Batches)</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4 text-neonLime"></i>
+                            <span>Stacks: HTML, CSS, JS, React, Node.js, Express, MongoDB</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="globe-2" class="w-4 h-4 text-neonLime"></i>
+                            <span>Projects: E-commerce, Admin Dashboards, APIs, Auth Systems</span>
+                        </li>
+                    </ul>
+
+                    <div class="border-t border-white/10 pt-3 mt-3 flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Ideal For: <span class="text-white">Final year & freshers</span></span>
+                        <a href="contact.html" class="text-neonLime hover:text-lime-300 flex items-center gap-1">
+                            Get Syllabus <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Program 2 -->
+                <article class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300 border border-hotPink/40 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 p-4">
+                        <i data-lucide="brain-circuit" class="w-20 h-20 text-hotPink"></i>
+                    </div>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-hotPink/15 text-hotPink text-[11px] font-semibold mb-4">
+                        <i data-lucide="sparkles" class="w-3 h-3"></i> FUTURE TECH
+                    </span>
+                    <h4 class="font-tech text-xl font-semibold mb-1">AI & Data Science Professional Track</h4>
+                    <p class="text-gray-400 text-xs mb-4">Python + ML + DL + Analytics</p>
+                    
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-hotPink"></i>
+                            <span>Duration: 10 months (Hybrid: Lab + Online)</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="database" class="w-4 h-4 text-hotPink"></i>
+                            <span>Topics: Python, Pandas, Numpy, ML, Deep Learning, NLP</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="chart-line" class="w-4 h-4 text-hotPink"></i>
+                            <span>Projects: Prediction Models, Dashboards, Chatbots</span>
+                        </li>
+                    </ul>
+
+                    <div class="border-t border-white/10 pt-3 mt-3 flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Ideal For: <span class="text-white">BSc/MSc/Engineers</span></span>
+                        <a href="contact.html" class="text-hotPink hover:text-pink-300 flex items-center gap-1">
+                            Get Syllabus <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Program 3 -->
+                <article class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300 border border-cyberBlue/40 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 p-4">
+                        <i data-lucide="smartphone" class="w-20 h-20 text-cyberBlue"></i>
+                    </div>
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyberBlue/15 text-cyberBlue text-[11px] font-semibold mb-4">
+                        <i data-lucide="smartphone" class="w-3 h-3"></i> MOBILE FIRST
+                    </span>
+                    <h4 class="font-tech text-xl font-semibold mb-1">Mobile App Development Mastery</h4>
+                    <p class="text-gray-400 text-xs mb-4">Flutter & React Native</p>
+                    
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-cyberBlue"></i>
+                            <span>Duration: 8 months (Hands-on app building)</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-cyberBlue"></i>
+                            <span>Tech: Flutter, Dart, React Native, Firebase</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="store" class="w-4 h-4 text-cyberBlue"></i>
+                            <span>Outcome: Publish-ready apps for Play Store</span>
+                        </li>
+                    </ul>
+
+                    <div class="border-t border-white/10 pt-3 mt-3 flex items-center justify-between text-xs">
+                        <span class="text-gray-400">Ideal For: <span class="text-white">Dev enthusiasts</span></span>
+                        <a href="contact.html" class="text-cyberBlue hover:text-sky-300 flex items-center gap-1">
+                            Get Syllabus <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Short-Term & Skill Boosters -->
+    <section class="relative py-16 border-y border-white/10 z-10 bg-black/40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10">
+                <div>
+                    <h2 class="text-hotPink font-tech text-sm tracking-[0.35em] mb-3">FAST-TRACK BOOSTERS</h2>
+                    <h3 class="text-3xl md:text-4xl font-bold">Short-Term Skill Programs</h3>
+                    <p class="text-gray-400 text-sm md:text-base mt-2 max-w-xl">
+                        Perfect for students and professionals who want to **upgrade one skill** quickly or add a strong line
+                        to their resume in **4–12 weeks**.
+                    </p>
+                </div>
+                <div class="text-xs text-gray-400 glass-panel px-4 py-3 rounded-xl flex items-center gap-2">
+                    <i data-lucide="calendar-clock" class="w-4 h-4 text-hotPink"></i>
+                    <span>Weekend & evening batches available for working professionals.</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Short Course 1 -->
+                <article class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-tech text-lg font-semibold">Web Development Foundations</h4>
+                        <span class="text-[11px] px-2 py-1 rounded-full bg-white/5 text-gray-300">4 Weeks</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Ideal for complete beginners. HTML, CSS, Bootstrap, basic JavaScript and responsive design.
+                    </p>
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Build your first 3 websites</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Understand hosting & domains</span>
+                        </li>
+                    </ul>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span>Great for: School / 1st year</span>
+                        <a href="contact.html" class="text-neonLime hover:text-lime-300 flex items-center gap-1">
+                            Enquire <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Short Course 2 -->
+                <article class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-tech text-lg font-semibold">Python for Data & Automation</h4>
+                        <span class="text-[11px] px-2 py-1 rounded-full bg-white/5 text-gray-300">6 Weeks</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Learn Python from scratch with a focus on data analysis, scripting, and automation tasks.
+                    </p>
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Python basics to intermediate</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Pandas, CSV handling, APIs</span>
+                        </li>
+                    </ul>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span>Great for: Any graduation stream</span>
+                        <a href="contact.html" class="text-neonLime hover:text-lime-300 flex items-center gap-1">
+                            Enquire <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Short Course 3 -->
+                <article class="glass-panel p-6 rounded-2xl hover-card transition-all duration-300">
+                    <div class="flex items-center justify-between mb-3">
+                        <h4 class="font-tech text-lg font-semibold">UI/UX Design Essentials</h4>
+                        <span class="text-[11px] px-2 py-1 rounded-full bg-white/5 text-gray-300">8 Weeks</span>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Learn how to design beautiful, user-friendly interfaces using Figma and design systems.
+                    </p>
+                    <ul class="space-y-2 text-[13px] text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Design fundamentals & color theory</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-4 h-4 text-neonLime"></i>
+                            <span>Portfolio-ready app/web designs</span>
+                        </li>
+                    </ul>
+                    <div class="flex items-center justify-between text-xs text-gray-400">
+                        <span>Great for: Creative minds</span>
+                        <a href="contact.html" class="text-neonLime hover:text-lime-300 flex items-center gap-1">
+                            Enquire <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who Should Join? -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-10">
+                <h2 class="text-cyberBlue font-tech text-sm tracking-[0.35em] mb-3">CONFUSED WHICH COURSE?</h2>
+                <h3 class="text-3xl md:text-4xl font-bold">We Have Tracks for Every <span class="text-neonLime">Stage</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 text-sm">
+                <!-- Card 1: College Students -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                        <i data-lucide="graduation-cap" class="w-5 h-5 text-neonLime"></i>
+                        College Students
+                    </h4>
+                    <p class="text-gray-300 mb-4">
+                        1st to final year BCA / BSc / BE students who want to **build solid fundamentals** and crack their
+                        **first IT job** right after graduation.
+                    </p>
+                    <ul class="space-y-2 text-gray-300 text-xs">
+                        <li>✔ Full Stack Developer Program</li>
+                        <li>✔ Web Development Foundations</li>
+                        <li>✔ Data Structures & Algorithms (Add-on)</li>
+                    </ul>
+                </div>
+
+                <!-- Card 2: Career Switchers -->
+                <div class="glass-panel p-6 rounded-2xl border border-hotPink/40">
+                    <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                        <i data-lucide="repeat" class="w-5 h-5 text-hotPink"></i>
+                        Career Switchers
+                    </h4>
+                    <p class="text-gray-300 mb-4">
+                        Working in non-IT jobs but want to move into development, data or product roles with a clear plan.
+                    </p>
+                    <ul class="space-y-2 text-gray-300 text-xs">
+                        <li>✔ AI & Data Science Professional Track</li>
+                        <li>✔ Python for Data & Automation</li>
+                        <li>✔ UI/UX Design Essentials</li>
+                    </ul>
+                </div>
+
+                <!-- Card 3: Skill Upgraders -->
+                <div class="glass-panel p-6 rounded-2xl">
+                    <h4 class="font-tech text-lg font-semibold mb-2 flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-cyberBlue"></i>
+                        Working Professionals
+                    </h4>
+                    <p class="text-gray-300 mb-4">
+                        Already in IT but want to upgrade to modern tech stacks to improve role, pay and growth.
+                    </p>
+                    <ul class="space-y-2 text-gray-300 text-xs">
+                        <li>✔ MERN + Next.js Advanced Modules</li>
+                        <li>✔ Cloud & DevOps Foundations</li>
+                        <li>✔ System Design Crash Course (Add-on)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="relative py-16 border-t border-white/10 z-10 bg-black/40">
+        <div class="max-w-5xl mx-auto px-4">
+            <div class="text-center mb-10">
+                <h2 class="text-neonLime font-tech text-sm tracking-[0.35em] mb-3">COURSE FAQ</h2>
+                <h3 class="text-3xl md:text-4xl font-bold">Frequently Asked <span class="text-hotPink">Questions</span></h3>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <!-- FAQ 1 -->
+                <div class="glass-panel p-5 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-neonLime mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold mb-1">Mera coding background strong nahi hai. Kya main flagship course join kar sakta hoon?</h4>
+                            <p class="text-gray-300">
+                                Bilkul. Hum har flagship program mein **foundation module** se start karte hain — programming basics, logic building,
+                                tools ka introduction. Non-CS background se bahut students ne yahaan se start karke IT jobs crack ki hain.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="glass-panel p-5 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-hotPink mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold mb-1">Placement assistance kaise milta hai?</h4>
+                            <p class="text-gray-300">
+                                Aapke projects, resume, LinkedIn, GitHub sab ready hone ke baad hum **mock interviews**, **HR prep**, aur 
+                                **company-specific interview practice** karwate hain. Hum Indore & metro cities ke multiple companies ke saath connected hain
+                                jahan par humare students placed ho chuke hain.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="glass-panel p-5 rounded-xl">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="help-circle" class="w-5 h-5 text-cyberBlue mt-1"></i>
+                        <div>
+                            <h4 class="font-semibold mb-1">Fees structure aur EMI options available hain?</h4>
+                            <p class="text-gray-300">
+                                Haan, flagship programs ke liye **EMI / installment options** available hain. Exact fees aur payment plan ke liye
+                                aap hamare counsellor se **WhatsApp / call** par baat kar sakte hain. Hum hamesha try karte hain ki deserving student ke liye
+                                fees barrier na bane.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-10 text-xs text-gray-400">
+                Still have questions? 
+                <a href="contact.html" class="text-neonLime hover:text-lime-300 font-semibold">Talk to our team →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-20 z-10">
+        <div class="max-w-4xl mx-auto px-4 text-center glass-panel rounded-3xl border border-neonLime/40 p-8 md:p-12">
+            <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4">Not Sure Which Course to Pick?</h2>
+            <p class="text-gray-300 text-sm md:text-base mb-8 max-w-2xl mx-auto">
+                Bas apni **current situation** aur **goal** batao — hum tumhare liye best course, batch timing aur roadmap recommend karenge.
+                No pressure, no sales drama. Sirf **honest guidance**.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <a href="contact.html" class="px-8 py-3 rounded-full bg-neonLime text-black font-semibold text-sm md:text-base hover:bg-lime-300 transition-colors flex items-center gap-2">
+                    Book a Free Counselling Session
+                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+                </a>
+                <a href="https://wa.me/919876543210" class="px-8 py-3 rounded-full border border-green-500 text-green-400 text-sm md:text-base hover:bg-green-500/10 transition-colors flex items-center gap-2">
+                    Chat on WhatsApp
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black pt-16 pb-8 relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                        <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Empowering the youth of Indore with cutting-edge technological skills to lead the global digital revolution.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neonLime hover:text-black transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-hotPink hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyberBlue hover:text-black transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="index.html" class="hover:text-neonLime transition-colors">Home</a></li>
+                        <li><a href="whyus.html" class="hover:text-neonLime transition-colors">Why Us</a></li>
+                        <li><a href="labs.html" class="hover:text-neonLime transition-colors">Labs</a></li>
+                        <li><a href="contact.html" class="hover:text-neonLime transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400 text-sm">
+                        <li class="flex items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-hotPink mr-3 mt-1 shrink-0"></i>
+                            <span>405, Scheme No. 54, <br>Vijay Nagar, Indore, MP 452010</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>admissions@hightech.edu.in</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2024 High Tech Education Indore. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Background Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        });
+
+        // THREE.JS SETUP
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0b0014, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 35;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Stars
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 250;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 140;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xccff00,
+            size: 0.7,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        // Wire Mesh
+        const wireGeometry = new THREE.TorusKnotGeometry(18, 0.4, 120, 16);
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0099, wireframe: true, transparent: true, opacity: 0.12 });
+        const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
+        scene.add(wireMesh);
+
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        const halfX = window.innerWidth / 2;
+        const halfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - halfX);
+            mouseY = (event.clientY - halfY);
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            targetX = mouseX * 0.0005;
+            targetY = mouseY * 0.0005;
+
+            wireMesh.rotation.y = elapsed * 0.04 + targetX;
+            wireMesh.rotation.x = elapsed * 0.02 + targetY;
+            stars.rotation.y += 0.0008;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

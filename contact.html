@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | High Tech Education Indore</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepSpace: '#0b0014',
+                        neonLime: '#ccff00',
+                        hotPink: '#ff0099',
+                        cyberBlue: '#00f3ff',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    fontFamily: {
+                        tech: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #ccff00, 0 0 20px #ccff00' },
+                            '50%': { boxShadow: '0 0 20px #ff0099, 0 0 40px #ff0099' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0014;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0014;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff0099, #ccff00);
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(11, 0, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ccff00, #00f3ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hover-card:hover {
+            transform: translateY(-6px);
+            border-color: #ccff00;
+            box-shadow: 0 0 24px rgba(204, 255, 0, 0.18);
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0014;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-hotPink selection:text-white">
+
+    <!-- Loader -->
+    <div id="loader">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-neonLime border-t-hotPink rounded-full animate-spin mb-4"></div>
+            <h2 class="font-tech text-xl text-white tracking-widest">CONNECTING TO CAMPUS...</h2>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                    <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Home</a>
+                        <a href="whyus.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Why Us</a>
+                        <a href="courses.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Courses</a>
+                        <a href="labs.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Labs</a>
+                        <a href="contact.html" class="text-neonLime border-b border-neonLime px-3 py-2 font-medium text-lg">Contact</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative min-h-[60vh] flex items-center justify-center px-4 pt-28 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0014] z-0 pointer-events-none"></div>
+        
+        <div class="z-10 max-w-4xl text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-1 border border-cyberBlue/60 rounded-full bg-cyberBlue/10 backdrop-blur-md mb-5 animate-slide-up" style="animation-delay:0.2s">
+                <i data-lucide="message-circle" class="w-4 h-4 text-cyberBlue"></i>
+                <span class="text-[13px] tracking-[0.25em] font-semibold text-cyberBlue">LET'S TALK</span>
+            </span>
+
+            <h1 class="font-tech text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight text-gradient animate-slide-up" style="animation-delay:0.4s">
+                START YOUR<br/>HIGH TECH JOURNEY.
+            </h1>
+
+            <p class="text-lg md:text-2xl text-gray-300 max-w-3xl mx-auto animate-slide-up" style="animation-delay:0.6s">
+                Fill out the form, and our counsellor will reach out with the **best course, batch and plan** for you.
+            </p>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="relative py-16 z-10">
+        <div class="max-w-7xl mx-auto px-4 grid lg:grid-cols-[1.4fr_1fr] gap-10 items-start">
+            <!-- CONTACT FORM (Web3Forms) -->
+            <div class="glass-panel rounded-3xl p-6 md:p-8 border border-neonLime/40">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="font-tech text-2xl md:text-3xl font-bold mb-1">Tell Us About You</h2>
+                        <p class="text-gray-400 text-sm">2 minute form, 1 conversation that can change your career.</p>
+                    </div>
+                    <div class="hidden md:flex flex-col items-end text-xs text-gray-400">
+                        <span class="flex items-center gap-1">
+                            <i data-lucide="clock" class="w-3 h-3 text-neonLime"></i> Response within 24 hrs
+                        </span>
+                        <span class="flex items-center gap-1 mt-1">
+                            <i data-lucide="shield-check" class="w-3 h-3 text-hotPink"></i> No spam, no data sharing
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Web3Forms form -->
+                <!-- IMPORTANT: Replace YOUR_ACCESS_KEY_HERE with your real Web3Forms access key -->
+                <form 
+                    action="https://api.web3forms.com/submit" 
+                    method="POST"
+                    class="space-y-5"
+                >
+                    <!-- REQUIRED: Access Key -->
+                    <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+                    <!-- OPTIONAL: Redirect URL after successful submit -->
+                    <input type="hidden" name="redirect" value="https://yourdomain.com/thank-you.html">
+                    <!-- OPTIONAL: From which page -->
+                    <input type="hidden" name="subject" value="New Enquiry from HighTech Contact Page">
+
+                    <!-- Name -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Full Name</label>
+                            <input 
+                                type="text" 
+                                name="name" 
+                                required
+                                placeholder="Enter your full name"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-neonLime focus:outline-none text-sm"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">WhatsApp Number</label>
+                            <input 
+                                type="tel" 
+                                name="phone" 
+                                required
+                                placeholder="+91 XXXXX XXXXX"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-neonLime focus:outline-none text-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Email & City -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Email</label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                required
+                                placeholder="you@example.com"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-cyberBlue focus:outline-none text-sm"
+                            >
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">City</label>
+                            <input 
+                                type="text" 
+                                name="city" 
+                                placeholder="Indore / Other"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-cyberBlue focus:outline-none text-sm"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Interest -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Which Track Are You Interested In?</label>
+                        <select 
+                            name="course_interest"
+                            class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-hotPink focus:outline-none text-sm text-gray-200"
+                            required
+                        >
+                            <option value="" disabled selected>Select an option</option>
+                            <option value="Full Stack Development">Full Stack Development (MERN / Next.js)</option>
+                            <option value="AI & Data Science">AI & Data Science</option>
+                            <option value="Mobile App Development">Mobile App Development (Flutter / React Native)</option>
+                            <option value="Python / Programming Basics">Programming & Python Basics</option>
+                            <option value="UI/UX / Design">UI / UX Design</option>
+                            <option value="Not Sure / Need Guidance">Not Sure – Need Guidance</option>
+                        </select>
+                    </div>
+
+                    <!-- Background / Status -->
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Current Status</label>
+                            <select 
+                                name="current_status"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-hotPink focus:outline-none text-sm text-gray-200"
+                            >
+                                <option value="" disabled selected>Select your status</option>
+                                <option value="School Student">School Student</option>
+                                <option value="College 1st-2nd Year">College 1st-2nd Year</option>
+                                <option value="Final Year / Fresher">Final Year / Fresher</option>
+                                <option value="Working Professional (Non-IT)">Working Professional (Non-IT)</option>
+                                <option value="Working Professional (IT)">Working Professional (IT)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Preferred Mode</label>
+                            <select 
+                                name="preferred_mode"
+                                class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-hotPink focus:outline-none text-sm text-gray-200"
+                            >
+                                <option value="" disabled selected>Select</option>
+                                <option value="Offline (Indore Campus)">Offline (Indore Campus)</option>
+                                <option value="Online (Live)">Online (Live)</option>
+                                <option value="Hybrid">Hybrid (Mix)</option>
+                                <option value="Open to Any">Open to Any</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-300 mb-1 uppercase tracking-wide">Tell Us About Your Goal</label>
+                        <textarea
+                            name="message"
+                            rows="4"
+                            placeholder="Example: Final year BCA, want to crack an IT job in full stack / AI within next 6–12 months..."
+                            class="w-full px-3 py-2 rounded-md bg-black/40 border border-white/15 focus:border-neonLime focus:outline-none text-sm resize-none"
+                        ></textarea>
+                    </div>
+
+                    <!-- Web3Forms will handle validation & spam. 
+                         If you enable hCaptcha in dashboard, they inject it automatically. -->
+
+                    <!-- Consent -->
+                    <div class="flex items-start gap-2 text-[11px] text-gray-400">
+                        <input 
+                            type="checkbox" 
+                            name="consent" 
+                            required
+                            class="mt-1 w-3 h-3 rounded border border-gray-500 bg-black/60"
+                        >
+                        <span>
+                            I agree to be contacted on WhatsApp / call regarding courses, batches and offers from High Tech Education.
+                        </span>
+                    </div>
+
+                    <!-- Status Messages (for non-redirect mode; optional) -->
+                    <div id="form-status" class="hidden text-xs mt-2"></div>
+
+                    <!-- Submit -->
+                    <div class="pt-2 flex flex-wrap gap-4 items-center justify-between">
+                        <button 
+                            type="submit"
+                            class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-neonLime text-black font-semibold text-sm hover:bg-lime-300 transition-colors"
+                        >
+                            Submit Enquiry
+                            <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                        <div class="text-[11px] text-gray-500 flex items-center gap-2">
+                            <i data-lucide="lock" class="w-3 h-3"></i>
+                            Your details are securely sent via Web3Forms.
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- CONTACT INFO / MAP / WHATSAPP -->
+            <div class="space-y-6">
+                <div class="glass-panel rounded-2xl p-6 hover-card">
+                    <h3 class="font-tech text-lg font-semibold mb-4 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-hotPink"></i>
+                        Campus Address
+                    </h3>
+                    <p class="text-gray-300 text-sm mb-3">
+                        405, Scheme No. 54, Vijay Nagar, Indore, Madhya Pradesh 452010
+                    </p>
+                    <p class="text-gray-400 text-xs mb-4">
+                        5 minutes from major bus stops & close to key tech hubs of Indore.
+                    </p>
+                    <a 
+                        href="https://www.google.com/maps" 
+                        target="_blank"
+                        class="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+                    >
+                        Open in Google Maps
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                    </a>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 hover-card">
+                    <h3 class="font-tech text-lg font-semibold mb-4 flex items-center gap-2">
+                        <i data-lucide="phone" class="w-5 h-5 text-neonLime"></i>
+                        Call & WhatsApp
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-300 mb-4">
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone-call" class="w-4 h-4 text-neonLime"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i data-lucide="phone-call" class="w-4 h-4 text-neonLime"></i>
+                            <span>+91 70007 45724 (Counsellor)</span>
+                        </li>
+                    </ul>
+                    <a 
+                        href="https://wa.me/919876543210"
+                        target="_blank"
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-green-500 text-green-400 text-xs hover:bg-green-500/10 transition-colors"
+                    >
+                        Chat on WhatsApp
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                    </a>
+                    <p class="text-[11px] text-gray-500 mt-3">Timings: 10:00 AM – 8:00 PM (Mon–Sat)</p>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6">
+                    <h3 class="font-tech text-lg font-semibold mb-3 flex items-center gap-2">
+                        <i data-lucide="clock-4" class="w-5 h-5 text-cyberBlue"></i>
+                        Quick Info
+                    </h3>
+                    <ul class="text-xs text-gray-300 space-y-2">
+                        <li>✔ Demo sessions available for most flagship programs.</li>
+                        <li>✔ Custom counselling for career switchers & working professionals.</li>
+                        <li>✔ Group discounts for 3+ friends / referrals.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black pt-16 pb-8 relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                        <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Empowering the youth of Indore with cutting-edge technological skills to lead the global digital revolution.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neonLime hover:text-black transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-hotPink hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyberBlue hover:text-black transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="index.html" class="hover:text-neonLime transition-colors">Home</a></li>
+                        <li><a href="whyus.html" class="hover:text-neonLime transition-colors">Why Us</a></li>
+                        <li><a href="courses.html" class="hover:text-neonLime transition-colors">Courses</a></li>
+                        <li><a href="labs.html" class="hover:text-neonLime transition-colors">Labs</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400 text-sm">
+                        <li class="flex items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-hotPink mr-3 mt-1 shrink-0"></i>
+                            <span>405, Scheme No. 54, <br>Vijay Nagar, Indore, MP 452010</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>admissions@hightech.edu.in</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2024 High Tech Education Indore. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Background Script -->
+    <script>
+        lucide.createIcons();
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        });
+
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0b0014, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 35;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 220;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 140;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xccff00,
+            size: 0.7,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        const wireGeometry = new THREE.TorusKnotGeometry(18, 0.4, 120, 16);
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0099, wireframe: true, transparent: true, opacity: 0.12 });
+        const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
+        scene.add(wireMesh);
+
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        const halfX = window.innerWidth / 2;
+        const halfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - halfX);
+            mouseY = (event.clientY - halfY);
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            targetX = mouseX * 0.0005;
+            targetY = mouseY * 0.0005;
+
+            wireMesh.rotation.y = elapsed * 0.04 + targetX;
+            wireMesh.rotation.x = elapsed * 0.02 + targetY;
+            stars.rotation.y += 0.0008;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>

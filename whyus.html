@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Us | High Tech Education Indore</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (via unpkg for vanilla HTML) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepSpace: '#0b0014',
+                        neonLime: '#ccff00',
+                        hotPink: '#ff0099',
+                        cyberBlue: '#00f3ff',
+                        glass: 'rgba(255, 255, 255, 0.05)',
+                    },
+                    fontFamily: {
+                        tech: ['Orbitron', 'sans-serif'],
+                        body: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 10px #ccff00, 0 0 20px #ccff00' },
+                            '50%': { boxShadow: '0 0 20px #ff0099, 0 0 40px #ff0099' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(50px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0b0014;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0014;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #ff0099, #ccff00);
+            border-radius: 4px;
+        }
+
+        .glass-panel {
+            background: rgba(11, 0, 20, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ccff00, #00f3ff, #ff0099);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s linear infinite;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .hover-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: #ccff00;
+            box-shadow: 0 0 30px rgba(204, 255, 0, 0.2);
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0b0014;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-hotPink selection:text-white">
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-neonLime border-t-hotPink rounded-full animate-spin mb-4"></div>
+            <h2 class="font-tech text-xl text-white tracking-widest">SYNCING WITH REALITY...</h2>
+        </div>
+    </div>
+
+    <!-- 3D Background Canvas -->
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                    <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Home</a>
+                        <a href="whyus.html" class="text-neonLime border-b border-neonLime px-3 py-2 font-medium text-lg">Why Us</a>
+                        <a href="courses.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Courses</a>
+                        <a href="labs.html" class="hover:text-neonLime transition-colors px-3 py-2 font-medium text-lg">Labs</a>
+                        <a href="contact.html" class="bg-hotPink hover:bg-pink-600 text-white px-6 py-2 rounded-full font-tech transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(255,0,153,0.5)]">Join Now</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button" class="text-gray-300 hover:text-white p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header / Hero -->
+    <section class="relative min-h-[70vh] flex items-center justify-center px-4 pt-28 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0b0014] z-0 pointer-events-none"></div>
+        
+        <div class="z-10 max-w-4xl text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-1 border border-neonLime/60 rounded-full bg-neonLime/10 backdrop-blur-md mb-5 animate-slide-up" style="animation-delay:0.2s">
+                <i data-lucide="sparkles" class="w-4 h-4 text-neonLime"></i>
+                <span class="text-[13px] tracking-[0.25em] font-semibold text-neonLime">WHY HIGH TECH EDUCATION</span>
+            </span>
+
+            <h1 class="font-tech text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight text-gradient animate-slide-up" style="animation-delay:0.4s">
+                NOT JUST AN INSTITUTE.<br />
+                A LAUNCHPAD.
+            </h1>
+
+            <p class="text-lg md:text-2xl text-gray-300 max-w-3xl mx-auto animate-slide-up" style="animation-delay:0.6s">
+                High Tech Education Indore is built for <span class="text-neonLime font-semibold">serious learners</span> who want
+                <span class="text-hotPink font-semibold">real skills, real projects, and real placements</span> — not just another certificate.
+            </p>
+        </div>
+    </section>
+
+    <!-- Core Pillars -->
+    <section class="relative py-20 z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-14">
+                <h2 class="text-neonLime font-tech text-sm tracking-[0.35em] mb-3">OUR CORE PILLARS</h2>
+                <h3 class="text-3xl md:text-5xl font-bold">The Engine Behind Our <span class="text-hotPink">Results</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Pillar 1 -->
+                <div class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300">
+                    <div class="w-12 h-12 rounded-full bg-neonLime/20 border border-neonLime/70 flex items-center justify-center mb-4">
+                        <i data-lucide="brain-circuit" class="w-6 h-6 text-neonLime"></i>
+                    </div>
+                    <h4 class="font-tech text-xl font-semibold mb-2">Industry First Curriculum</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Every topic, assignment, and project is designed after talking to hiring managers from top IT companies
+                        in Indore, Bengaluru, Pune, and Hyderabad. You learn what companies actually expect from a fresher.
+                    </p>
+                </div>
+
+                <!-- Pillar 2 -->
+                <div class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300 border-t border-t-hotPink/60">
+                    <div class="w-12 h-12 rounded-full bg-hotPink/20 border border-hotPink/70 flex items-center justify-center mb-4">
+                        <i data-lucide="rocket" class="w-6 h-6 text-hotPink"></i>
+                    </div>
+                    <h4 class="font-tech text-xl font-semibold mb-2">Outcome Driven Training</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Hum sirf syllabus complete nahi karte, hum outcome fix karte hain — clear roadmap from
+                        <span class="text-neonLime font-semibold">"Beginner" to "Job Ready"</span>. Regular tests, review calls and doubt-solving ensure you never get stuck.
+                    </p>
+                </div>
+
+                <!-- Pillar 3 -->
+                <div class="glass-panel p-7 rounded-2xl hover-card transition-all duration-300">
+                    <div class="w-12 h-12 rounded-full bg-cyberBlue/20 border border-cyberBlue/70 flex items-center justify-center mb-4">
+                        <i data-lucide="hand-heart" class="w-6 h-6 text-cyberBlue"></i>
+                    </div>
+                    <h4 class="font-tech text-xl font-semibold mb-2">Mentorship That Cares</h4>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Humare liye har student ek ID number nahi, ek <span class="text-hotPink font-semibold">career story</span> hai.
+                        1:1 mentorship, career counselling, mock interviews and personal strategy calls help you stay on track.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Comparison Section -->
+    <section class="relative py-20 border-y border-white/10 z-10 bg-black/40">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-10 items-start">
+                <div>
+                    <h2 class="text-2xl md:text-4xl font-bold mb-4">How We Are <span class="text-neonLime">Different</span> From Typical Institutes</h2>
+                    <p class="text-gray-300 text-sm md:text-base mb-6">
+                        Traditional coaching centres focus on <span class="text-hotPink">completing topics</span>.
+                        High Tech focuses on <span class="text-neonLime font-semibold">building engineers</span>.
+                        Here's a clear side-by-side view:
+                    </p>
+
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                            <span><span class="font-semibold text-white">Live project work</span> with real deadlines — not just demo apps made on whiteboard.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                            <span><span class="font-semibold text-white">Placement-prep integrated</span> in course: Resume, LinkedIn, GitHub, mock interviews.</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i data-lucide="check-circle-2" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                            <span><span class="font-semibold text-white">Concept + implementation + deployment</span> — har stack ka end-to-end exposure.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Comparison Card -->
+                <div class="glass-panel rounded-2xl p-6 md:p-8">
+                    <div class="grid grid-cols-2 text-xs font-semibold uppercase tracking-wide mb-4">
+                        <div class="text-gray-400">Typical Institute</div>
+                        <div class="text-neonLime text-right">High Tech Education</div>
+                    </div>
+
+                    <div class="space-y-4 text-[13px]">
+                        <div class="flex items-start gap-3">
+                            <div class="w-1/2 text-gray-400">Fixed PPT based teaching</div>
+                            <div class="w-1/2 text-right text-gray-100">Interactive labs with live coding and doubt solving</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-1/2 text-gray-400">Only theory & assignments</div>
+                            <div class="w-1/2 text-right text-gray-100">Portfolio ready projects deployed on Cloud</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-1/2 text-gray-400">Generic notes for everyone</div>
+                            <div class="w-1/2 text-right text-gray-100">Personalised learning path based on your background</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-1/2 text-gray-400">Placement talk at the end</div>
+                            <div class="w-1/2 text-right text-gray-100">Placement support from day 1 (resume, profile reviews)</div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-1/2 text-gray-400">Faculty with limited industry exposure</div>
+                            <div class="w-1/2 text-right text-gray-100">Mentors currently working in top tech roles</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-between text-xs text-gray-400 border-t border-white/10 pt-4">
+                        <span>Decision simple hai: <span class="text-neonLime">growth choose karo</span>.</span>
+                        <a href="contact.html" class="text-hotPink hover:text-pink-400 font-semibold">Talk to Counsellor →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Numbers + Social Proof -->
+    <section class="relative py-20 z-10">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-2xl md:text-4xl font-bold mb-4">Built in Indore. <span class="text-hotPink">Connected</span> to the World.</h2>
+                    <p class="text-gray-300 text-sm md:text-base mb-4">
+                        High Tech Education started with a simple mission: 
+                        <span class="text-neonLime font-semibold">"Indore ke students ko metro cities ke equal opportunities dena"</span>.
+                        Aaj humare learners sirf MP mein nahi, <span class="text-hotPink font-semibold">India ke top IT hubs</span>
+                        aur even <span class="text-cyberBlue font-semibold">overseas</span> companies mein bhi kaam kar rahe hain.
+                    </p>
+                    <p class="text-gray-400 text-sm md:text-base">
+                        From first-year college students to working professionals switching careers, we have seen hundreds of
+                        transformation stories — and yours can be next.
+                    </p>
+
+                    <div class="mt-8 grid grid-cols-3 gap-4 text-center text-xs">
+                        <div class="glass-panel p-4 rounded-xl">
+                            <p class="font-tech text-2xl md:text-3xl font-bold text-neonLime">5000+</p>
+                            <p class="text-gray-400 mt-1">Learners Trained</p>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl">
+                            <p class="font-tech text-2xl md:text-3xl font-bold text-hotPink">120+</p>
+                            <p class="text-gray-400 mt-1">Companies Connected</p>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl">
+                            <p class="font-tech text-2xl md:text-3xl font-bold text-cyberBlue">4.9★</p>
+                            <p class="text-gray-400 mt-1">Average Rating</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-6 md:p-8">
+                    <h4 class="font-tech text-xl font-semibold mb-4 flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-5 h-5 text-neonLime"></i>
+                        Our Promise to Every Student
+                    </h4>
+
+                    <ul class="space-y-4 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="target" class="w-5 h-5 text-hotPink mt-0.5"></i>
+                            <span>We will <span class="font-semibold text-white">never compromise on quality</span> of teaching, batch size or curriculum just to increase admissions.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="clock" class="w-5 h-5 text-cyberBlue mt-0.5"></i>
+                            <span>You will always get <span class="font-semibold text-white">timely support</span> on doubts via WhatsApp groups, live sessions and 1:1 calls.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="line-chart" class="w-5 h-5 text-neonLime mt-0.5"></i>
+                            <span>We will <span class="font-semibold text-white">track your progress</span> and push you when you slow down — like a real mentor should.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="briefcase" class="w-5 h-5 text-yellow-300 mt-0.5"></i>
+                            <span>Placement assistance will not mean "just forwarding your resume" — we work with you till you crack interviews.</span>
+                        </li>
+                    </ul>
+
+                    <div class="mt-6 p-4 rounded-xl bg-black/40 border border-neonLime/40 flex flex-col md:flex-row items-start md:items-center gap-4 text-xs">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-neonLime/20 flex items-center justify-center">
+                                <i data-lucide="message-circle" class="w-5 h-5 text-neonLime"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold">Still confused if this is right for you?</p>
+                                <p class="text-gray-400">Book a free counselling call. No sales talk. Pure guidance.</p>
+                            </div>
+                        </div>
+                        <a href="contact.html" class="mt-1 md:mt-0 inline-flex items-center px-4 py-2 rounded-full bg-neonLime text-black font-semibold hover:bg-lime-300 transition-colors">
+                            Talk to a Mentor <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process / Experience Section -->
+    <section class="relative py-20 z-10 bg-hotPink/5">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-14">
+                <h2 class="text-cyberBlue font-tech text-sm tracking-[0.35em] mb-3">LEARNING EXPERIENCE</h2>
+                <h3 class="text-3xl md:text-5xl font-bold">What Your Journey <span class="text-neonLime">Feels Like</span></h3>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6 text-xs md:text-sm">
+                <div class="glass-panel p-5 rounded-xl flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-neonLime/20 flex items-center justify-center text-[11px] font-bold text-neonLime">01</span>
+                        <span class="font-semibold">Foundation</span>
+                    </div>
+                    <p class="text-gray-300">Strong basics in programming, logic building and tools. Even non-CS background students feel comfortable.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-hotPink/20 flex items-center justify-center text-[11px] font-bold text-hotPink">02</span>
+                        <span class="font-semibold">Hands-On Labs</span>
+                    </div>
+                    <p class="text-gray-300">Daily coding, mini projects and lab challenges. You build muscle memory with code, not just notes.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-cyberBlue/20 flex items-center justify-center text-[11px] font-bold text-cyberBlue">03</span>
+                        <span class="font-semibold">Portfolio Projects</span>
+                    </div>
+                    <p class="text-gray-300">End-to-end applications — web apps, dashboards, APIs — hosted live with your own branding.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-yellow-300/20 flex items-center justify-center text-[11px] font-bold text-yellow-300">04</span>
+                        <span class="font-semibold">Job Launch</span>
+                    </div>
+                    <p class="text-gray-300">Mock interviews, HR prep, referrals and placement drives to land your first (or better) tech job.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="relative py-20 z-10">
+        <div class="max-w-4xl mx-auto px-4 text-center glass-panel rounded-3xl border border-neonLime/40 p-8 md:p-12">
+            <h2 class="font-tech text-3xl md:text-4xl font-bold mb-4">Ready to Choose the <span class="text-gradient">Serious Path?</span></h2>
+            <p class="text-gray-300 text-sm md:text-base mb-8 max-w-2xl mx-auto">
+                If you are willing to put in the work, we are ready to stand with you till you see real results.
+                High Tech Education is not for "timepass" — it's for those who want to genuinely upgrade their life.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+                <a href="contact.html" class="px-8 py-3 rounded-full bg-neonLime text-black font-semibold text-sm md:text-base hover:bg-lime-300 transition-colors flex items-center gap-2">
+                    Book a Free Counselling Session
+                    <i data-lucide="phone-call" class="w-4 h-4"></i>
+                </a>
+                <a href="courses.html" class="px-8 py-3 rounded-full border border-gray-600 text-gray-200 text-sm md:text-base hover:border-neonLime hover:text-neonLime transition-colors flex items-center gap-2">
+                    Browse All Courses
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer (Same style as main site for consistency) -->
+    <footer class="bg-black pt-16 pb-8 relative z-10 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <i data-lucide="cpu" class="text-neonLime w-8 h-8"></i>
+                        <span class="font-tech text-2xl font-bold tracking-wider">HIGH<span class="text-hotPink">TECH</span></span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-sm">
+                        Empowering the youth of Indore with cutting-edge technological skills to lead the global digital revolution.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-neonLime hover:text-black transition-all"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-hotPink hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-cyberBlue hover:text-black transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Explore</h4>
+                    <ul class="space-y-3 text-gray-400 text-sm">
+                        <li><a href="index.html" class="hover:text-neonLime transition-colors">Home</a></li>
+                        <li><a href="courses.html" class="hover:text-neonLime transition-colors">Courses</a></li>
+                        <li><a href="labs.html" class="hover:text-neonLime transition-colors">Labs</a></li>
+                        <li><a href="contact.html" class="hover:text-neonLime transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-tech text-lg font-bold text-white mb-6">Contact Us</h4>
+                    <ul class="space-y-4 text-gray-400 text-sm">
+                        <li class="flex items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-hotPink mr-3 mt-1 shrink-0"></i>
+                            <span>405, Scheme No. 54, <br>Vijay Nagar, Indore, MP 452010</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>+91 98765 43210</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="w-5 h-5 text-hotPink mr-3"></i>
+                            <span>admissions@hightech.edu.in</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500">
+                <p>&copy; 2024 High Tech Education Indore. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="hover:text-white">Privacy Policy</a>
+                    <a href="#" class="hover:text-white">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Three.js Background Script (simple reused from main) -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Loader
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 1000);
+        });
+
+        // THREE.JS SETUP (simple subtle background)
+        const canvas = document.getElementById('bg-canvas');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x0b0014, 0.015);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 35;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starCount = 250;
+        const starPositions = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i++) {
+            starPositions[i] = (Math.random() - 0.5) * 120;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+
+        const starsMaterial = new THREE.PointsMaterial({
+            color: 0xccff00,
+            size: 0.7,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        const stars = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(stars);
+
+        const wireGeometry = new THREE.TorusKnotGeometry(18, 0.4, 120, 16);
+        const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xff0099, wireframe: true, transparent: true, opacity: 0.12 });
+        const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
+        scene.add(wireMesh);
+
+        let mouseX = 0, mouseY = 0;
+        let targetX = 0, targetY = 0;
+        const halfX = window.innerWidth / 2;
+        const halfY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX - halfX);
+            mouseY = (event.clientY - halfY);
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            targetX = mouseX * 0.0005;
+            targetY = mouseY * 0.0005;
+
+            wireMesh.rotation.y = elapsed * 0.04 + targetX;
+            wireMesh.rotation.x = elapsed * 0.02 + targetY;
+            stars.rotation.y += 0.0008;
+
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>
